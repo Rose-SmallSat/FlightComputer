@@ -20,7 +20,7 @@ const char PHASE_A='A';
 const char PHASE_B='B';
 const char PHASE_C='C';
 
-const int STARTUP_DELAY_MS=10;
+const double STARTUP_DELAY_MS=0.1;
 
 const int NUMBER_OF_PHASES=3;
 const int NUMBER_OF_COMBINATIONS=6;
@@ -42,9 +42,9 @@ void setup()
   digitalWrite(A_SOURCE,HIGH);
   digitalWrite(A_SINK,LOW);
   digitalWrite(B_SOURCE,LOW);
-  digitalWrite(B_SINK,HIGH);
+  digitalWrite(B_SINK,LOW);
   digitalWrite(C_SOURCE,LOW);
-  digitalWrite(C_SINK,LOW);
+  digitalWrite(C_SINK,HIGH);
   delay(0.5);
 }
 
