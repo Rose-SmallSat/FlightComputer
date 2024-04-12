@@ -35,7 +35,7 @@ const double STARTUP_DELAY_MS = 5;
 // Numbers of things
 const int NUMBER_OF_PHASES = 3;
 const int NUMBER_OF_COMBINATIONS = 6;
-const int NUMBER_OF_SPEEDS = 5;
+const int NUMBER_OF_SPEEDS = 10;
 
 // RPM Bounds and Options
 const int MIN_RPM = 1000;
@@ -46,11 +46,14 @@ int RPM_COUNTER_VALUES[NUMBER_OF_SPEEDS];
 
 // Timer Bounds and Options
 const int COIL_TIMER_PRESCALER = 8;
+const int COIL_TIMER_CLK_MHZ=SYS_CLK_MHZ/COIL_TIMER_PRESCALER;
 //const int RPM_TCOMPARE_MIN_VALUE = (SYS_CLK_MHZ*60*pow(10,6)) / (6*MIN_RPM*COIL_TIMER_PRESCALER);
-const int RPM_TCOMPARE_MIN_VALUE =2000;
-const int RPM_TCOMPARE_MAX_VALUE = 200;
-const int SPIKE_TCOMPARE_VALUE = 16;
-const int WAIT_TCOMPARE_VALUE = 60;
+const int RPM_TCOMPARE_MIN_VALUE = 20000;
+const int RPM_TCOMPARE_MAX_VALUE = 1000;
+//const int RPM_TCOMPARE_MIN_VALUE = 40000;
+//const int RPM_TCOMPARE_MAX_VALUE = 4000;
+const int SPIKE_TCOMPARE_VALUE = COIL_TIMER_CLK_MHZ*CURRENT_SPIKE_DELAY_US;
+const int WAIT_TCOMPARE_VALUE = COIL_TIMER_CLK_MHZ*WAIT_DELAY_US;
 
 /* Global Variables */
 int current_coil_combination;
@@ -66,7 +69,7 @@ char PATTERN[][NUMBER_OF_PHASES] = {{PHASE_A, PHASE_B, PHASE_C}, {PHASE_A, PHASE
 void setup()
 {
   //Initialize Serial for debugging
-  // Serial.begin(57600);
+  Serial.begin(57600);
   
   // Disable interrupts
   noInterrupts();
@@ -112,7 +115,7 @@ void setup()
   // Initialize variables
   for (int i = 0; i < NUMBER_OF_SPEEDS; i++)
   { // assign speeds from slowest to fastest in even increments
-    RPM_COUNTER_VALUES[i] = -((RPM_TCOMPARE_MAX_VALUE - RPM_TCOMPARE_MIN_VALUE) * i / (NUMBER_OF_SPEEDS - 1)) + RPM_TCOMPARE_MIN_VALUE;
+    RPM_COUNTER_VALUES[i] = ((RPM_TCOMPARE_MAX_VALUE - RPM_TCOMPARE_MIN_VALUE) * i / (NUMBER_OF_SPEEDS - 1)) + RPM_TCOMPARE_MIN_VALUE;
   }
   rpm_changed = false;
   current_coil_combination = 0;
@@ -120,6 +123,10 @@ void setup()
 
   //Delay
   delay(0.5);
+  Serial.println("Spike Value: "+String(SPIKE_TCOMPARE_VALUE));
+  Serial.println("Wait Value: "+String(WAIT_TCOMPARE_VALUE));
+  Serial.println("Coil Value: "+String(COIL_TIMER_CLK_MHZ));
+  Serial.println("RPM Value 1: "+String(RPM_COUNTER_VALUES[1]));
 
   // Enable Interrupts
   interrupts();
